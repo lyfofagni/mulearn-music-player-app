@@ -1,18 +1,18 @@
 const songs = [
   {
-    title: "Inspiring Cinematic",
-    artist: "Pixabay Music",
-    src: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_7c8b8d1f9c.mp3"
+    title: "SoundHelix Song 1",
+    artist: "SoundHelix",
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
   },
   {
-    title: "Chill Abstract",
-    artist: "Pixabay Music",
-    src: "https://cdn.pixabay.com/download/audio/2022/10/12/audio_73bfa7a9c5.mp3"
+    title: "SoundHelix Song 2",
+    artist: "SoundHelix",
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
   },
   {
-    title: "Ambient Piano",
-    artist: "Pixabay Music",
-    src: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d1718ab41c.mp3"
+    title: "SoundHelix Song 3",
+    artist: "SoundHelix",
+    src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
   }
 ];
 
@@ -32,19 +32,19 @@ function loadSong(index) {
   title.textContent = song.title;
   artist.textContent = song.artist;
   audio.src = song.src;
-  audio.load();
   updatePlaylist();
 }
 
 function togglePlay() {
   if (!isPlaying) {
-    audio.play().then(() => {
-      isPlaying = true;
-      playBtn.textContent = "⏸ Pause";
-    }).catch(err => {
-      console.error("Playback blocked:", err);
-      alert("Click play again — browser blocked autoplay.");
-    });
+    audio.play()
+      .then(() => {
+        isPlaying = true;
+        playBtn.textContent = "⏸ Pause";
+      })
+      .catch(() => {
+        alert("Audio could not be played. Please try another song.");
+      });
   } else {
     audio.pause();
     isPlaying = false;
@@ -55,20 +55,18 @@ function togglePlay() {
 function nextSong() {
   currentSong = (currentSong + 1) % songs.length;
   loadSong(currentSong);
-  forcePlay();
+  resetPlayState();
 }
 
 function prevSong() {
   currentSong = (currentSong - 1 + songs.length) % songs.length;
   loadSong(currentSong);
-  forcePlay();
+  resetPlayState();
 }
 
-function forcePlay() {
-  audio.play().then(() => {
-    isPlaying = true;
-    playBtn.textContent = "⏸ Pause";
-  });
+function resetPlayState() {
+  isPlaying = false;
+  playBtn.textContent = "▶ Play";
 }
 
 function setVolume(value) {
@@ -84,7 +82,7 @@ function updatePlaylist() {
     li.onclick = () => {
       currentSong = index;
       loadSong(index);
-      forcePlay();
+      resetPlayState();
     };
     playlist.appendChild(li);
   });
