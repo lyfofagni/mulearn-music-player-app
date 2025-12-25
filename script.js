@@ -23,36 +23,52 @@ const audio = document.getElementById("audio");
 const title = document.getElementById("title");
 const artist = document.getElementById("artist");
 const playlist = document.getElementById("playlist");
+const playBtn = document.getElementById("playBtn");
+
+audio.volume = 0.8;
 
 function loadSong(index) {
   const song = songs[index];
   title.textContent = song.title;
   artist.textContent = song.artist;
   audio.src = song.src;
+  audio.load();
   updatePlaylist();
 }
 
 function togglePlay() {
-  if (isPlaying) {
-    audio.pause();
+  if (!isPlaying) {
+    audio.play().then(() => {
+      isPlaying = true;
+      playBtn.textContent = "⏸ Pause";
+    }).catch(err => {
+      console.error("Playback blocked:", err);
+      alert("Click play again — browser blocked autoplay.");
+    });
   } else {
-    audio.play();
+    audio.pause();
+    isPlaying = false;
+    playBtn.textContent = "▶ Play";
   }
-  isPlaying = !isPlaying;
 }
 
 function nextSong() {
   currentSong = (currentSong + 1) % songs.length;
   loadSong(currentSong);
-  audio.play();
-  isPlaying = true;
+  forcePlay();
 }
 
 function prevSong() {
   currentSong = (currentSong - 1 + songs.length) % songs.length;
   loadSong(currentSong);
-  audio.play();
-  isPlaying = true;
+  forcePlay();
+}
+
+function forcePlay() {
+  audio.play().then(() => {
+    isPlaying = true;
+    playBtn.textContent = "⏸ Pause";
+  });
 }
 
 function setVolume(value) {
@@ -68,8 +84,7 @@ function updatePlaylist() {
     li.onclick = () => {
       currentSong = index;
       loadSong(index);
-      audio.play();
-      isPlaying = true;
+      forcePlay();
     };
     playlist.appendChild(li);
   });
@@ -78,4 +93,3 @@ function updatePlaylist() {
 audio.addEventListener("ended", nextSong);
 
 loadSong(currentSong);
-audio.volume = 0.8;
